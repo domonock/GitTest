@@ -43,7 +43,6 @@ class ViewController: ParentControllerViewController {
             case.success(let repo):
                 self.repo = repo
                 DispatchQueue.main.async {
-                    self.hideHud()
                     self.tableView.reloadData()
                     self.group.leave()
                 }
@@ -53,7 +52,6 @@ class ViewController: ParentControllerViewController {
                 }
             }
         }
-        
         self.group.notify(queue: .main) {
             print("both requests done")
         }

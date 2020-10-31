@@ -52,7 +52,6 @@ extension ViewController:UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! TableViewCell
         guard let repo = self.repo, let items = repo.items else {
             return cell
@@ -62,6 +61,4 @@ extension ViewController:UITableViewDataSource{
         cell.desc.text = items[indexPath.row].url
         return cell
     }
-    
-    
 }

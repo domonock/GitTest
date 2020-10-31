@@ -22,9 +22,10 @@ class ParentControllerViewController: UIViewController {
     func showHUD() {
         activityIndicator.startAnimating()
     }
-
+    
     func hideHud() {
         activityIndicator.stopAnimating()
+        activityIndicator.removeFromSuperview()
     }
 }
 
@@ -33,13 +34,5 @@ extension UIViewController {
         let alert = UIAlertController(title: "Error: \(error.domain)", message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
         present(alert, animated: true)
-    }
-
-    @objc open class func nibLoaded() -> Self {
-        return self.init(nibName: String(describing: self), bundle: nil)
-    }
-
-    @objc open class func storyboardLoaded() -> Self {
-        return UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: String(describing: self)) as! Self
     }
 }
