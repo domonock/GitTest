@@ -15,6 +15,9 @@ extension ViewController: UISearchBarDelegate{
         self.repoCount = 15
         self.group.enter()
         let queue = DispatchQueue(label: "searchBar", attributes: .concurrent)
+//        let thread = Thread {
+//            self.fetchData(from: textSearched, stars: .asc)
+//        }
         queue.async {
             self.fetchData(from: textSearched, stars: .asc)
         }
@@ -37,6 +40,9 @@ extension ViewController: UITableViewDelegate{
             self.repoCount += 15
             self.group.enter()
             let queue = DispatchQueue(label: "scrollView", attributes: .concurrent)
+//            let thread = Thread {
+//                self.fetchData(from: textSearched, stars: .asc)
+//            }
             queue.async {
                 self.fetchData(from: text, stars: .asc)
             }
