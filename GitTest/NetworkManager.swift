@@ -7,18 +7,31 @@
 
 import Foundation
 
-enum Stars:String{
-    case asc = "&sort=stars&order=asc"
-    case desc = "&sort=stars&order=desc"
+public enum SortBy: String {
+    case stars = "stars"
+    case name = "name"
 }
 
-public final class ServerManager{
-    public static let shared = ServerManager()
+public enum SortOrder: String{
+    case asc = "asc"
+    case desc = "desc"
+}
+
+public final class NetworkManager {
+    public static let shared = NetworkManager()
     private let urlString = "https://api.github.com"
     private let requestString = "/search/repositories"
     
-    func getData(stars:Stars, search:String, repoCount:Int, completion: @escaping (Result<Repo, NSError>) -> Void) {
-        let finalUrlString = urlString + requestString + "?q=\(search)" + stars.rawValue + "&per_page=\(repoCount)"
+    func getData(sortBy: SortBy, order: SortOrder, search: String, page: Int, perPage: Int, completion: @escaping (Result<Repo, NSError>) -> Void) {
+        let finalUrlString =
+            urlString +
+            requestString +
+            "?q=\(search)" +
+            "&sort=\(sortBy.rawValue)" +
+            "&order=\(order.rawValue)" +
+            "&per_page=\(perPage)" +
+            "&page=\(page)"
+        
         guard let url = URL(string: finalUrlString) else { return }
         let session = URLSession.shared
         session.dataTask(with: url) { (data, _, error) in

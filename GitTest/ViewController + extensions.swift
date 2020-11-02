@@ -9,22 +9,32 @@ import Foundation
 import UIKit
 
 
-extension ViewController: UISearchBarDelegate{
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange textSearched: String){
-        self.repoCount = 15
-        self.group.enter()
-        let queue = DispatchQueue(label: "searchBar", attributes: .concurrent)
-//        let thread = Thread {
-//            self.fetchData(from: textSearched, stars: .asc)
-//        }
-        queue.async {
-            self.fetchData(from: textSearched, stars: .asc)
-        }
-    }
+extension ViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
+        
+        guard let textSearched = searchBar.text else { return }
+        if textSearched.isEmpty {
+            self.items = []
+            return
+        }
+        
+        showHUD()
+        
+        DataManager.shared.search(textSearched) { [weak self] (result) in
+            guard let self = self else { return }
+            guard searchBar.text == textSearched else { return }
+            
+            switch result {
+            case .success(let items):
+                self.items = items
+            case .failure(let error):
+                self.showError(error)
+            }
+            self.hideHud()
+            self.tableView.reloadData()
+        }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -33,38 +43,17 @@ extension ViewController: UISearchBarDelegate{
     }
 }
 
-extension ViewController: UITableViewDelegate{
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if let text = self.searchBar.text, text != "", self.repoCount < 30{
-            self.repoCount += 15
-            self.group.enter()
-            let queue = DispatchQueue(label: "scrollView", attributes: .concurrent)
-//            let thread = Thread {
-//                self.fetchData(from: textSearched, stars: .asc)
-//            }
-            queue.async {
-                self.fetchData(from: text, stars: .asc)
-            }
-        }
-    }
-}
-
 extension ViewController:UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let repo = self.repo, let items = repo.items else { return 0 }
         return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! TableViewCell
-        guard let repo = self.repo, let items = repo.items else {
-            return cell
-        }
         
         cell.title.text = items[indexPath.row].name
-        cell.desc.text = items[indexPath.row].url
+        cell.desc.text = items[indexPath.row].owner?.login
         return cell
     }
 }

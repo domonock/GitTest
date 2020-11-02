@@ -8,15 +8,14 @@
 import UIKit
 
 class ParentControllerViewController: UIViewController {
-    let group = DispatchGroup()
     let activityIndicator = UIActivityIndicatorView()
-    var repo: Repo?
+    var items: [Item] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         activityIndicator.hidesWhenStopped = true
         activityIndicator.center = self.view.center
-        self.view.addSubview(activityIndicator)
+        activityIndicator.style = .large
     }
     
     func showHUD() {

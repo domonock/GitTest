@@ -10,7 +10,6 @@ import UIKit
 class ViewController: ParentControllerViewController {
     let tableView = UITableView()
     let searchBar = UISearchBar()
-    var repoCount = 15
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +24,6 @@ class ViewController: ParentControllerViewController {
         self.tableView.tableHeaderView = searchBar
         
         tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "TableViewCell")
-        tableView.delegate = self
         tableView.dataSource = self
         self.view.addSubview(tableView)
         
@@ -35,25 +33,11 @@ class ViewController: ParentControllerViewController {
         self.tableView.rightAnchor.constraint(equalTo: margins.rightAnchor, constant: 0).isActive = true
         self.tableView.leftAnchor.constraint(equalTo: margins.leftAnchor, constant: 0).isActive = true
         self.tableView.topAnchor.constraint(equalTo: margins.topAnchor, constant: 0).isActive = true
-    }
-    
-    func fetchData(from text:String, stars: Stars){
-        ServerManager.shared.getData(stars: stars, search: text, repoCount: self.repoCount) { (result) in
-            switch result{
-            case.success(let repo):
-                self.repo = repo
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                    self.group.leave()
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.showError(error)
-                }
-            }
-        }
-        self.group.notify(queue: .main) {
-            print("both requests done")
-        }
+        
+        self.view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: margins.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: margins.centerYAnchor)
+        ])
     }
 }
